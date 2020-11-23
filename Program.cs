@@ -1525,13 +1525,12 @@ namespace ECCScan
 
 			if (args.Length == 0)
 			{
-				Console.WriteLine("Usage:");
-				Console.WriteLine("Drag 'n drop your PS1 image files (.bin or .img) onto this executable file.");
+				Console.WriteLine("Usage: Drag 'n drop your PS1 image files (.bin or .img) onto this executable file.");
 				Console.WriteLine();
 				Console.WriteLine("Command line: ECCScan_dragndrop [-sf] bin_file");
 				Console.WriteLine("\tbin_file\tFull path to the .bin track file (raw format, 2352 bytes per sector)");
 				Console.WriteLine("\t-s\t\tScan EDC/ECC errors without changing the file.");
-				Console.WriteLine("\t-f\t\tFix EDC/ECC errors. This will fix the errors in the same .bin file without waiting for confirmation.");
+				Console.WriteLine("\t-f\t\tFix EDC/ECC errors. This will fix the errors in the same .bin file.");
 				Console.WriteLine();
 				Console.WriteLine("Press any key to exit.");
 				Console.ReadKey();
@@ -1559,6 +1558,7 @@ namespace ECCScan
 
 			if (interactive)
 			{
+				Console.WriteLine();
 				Console.WriteLine("Fixing EDC/ECC errors. Create a backup of the file if you want to keep the orignal.");
 				Console.WriteLine("Press Enter to continue, S to scan without changing the file or other key to exit.");
 				ConsoleKeyInfo key = Console.ReadKey(true);
@@ -1649,6 +1649,7 @@ namespace ECCScan
 			fs.Close();
 			if (interactive)
 			{
+				Console.WriteLine();
 				Console.WriteLine("Finished. Press any key to exit.");
 				Console.ReadKey();
 			}
