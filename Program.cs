@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -1521,12 +1521,12 @@ namespace ECCScan
 
 		static void Main(string[] args)
 		{
-			Console.WriteLine("Terraonion MODE PSX disc EDC/ECC Scan & Fix tool. www.terraonion.com");
+			Console.WriteLine("Terraonion MODE PSX disc EDC/ECC Scan & Fix tool. www.terraonion.com - Drag 'n drop mod.");
 
 			if (args.Length == 0)
 			{
 				Console.WriteLine("Usage:");
-				Console.WriteLine("ECCScan [-f] bin_file");
+				Console.WriteLine("ECCScan_dragndrop [-s] bin_file");
 				Console.WriteLine("\tbin_file\tFull path to the .bin track file (raw format, 2352 bytes per sector)");
 				Console.WriteLine("\t-f\t\tFix EDC/ECC Errors. This will fix the errors in the same .bin file");
 
@@ -1534,12 +1534,12 @@ namespace ECCScan
 			}
 
 			string fname = "";
-			bool fix = false;
+			bool fix = true;
 
-			if (args[0] == "-f" || args[0] == "-F")
+			if (args[0] == "-s" || args[0] == "-S")
 			{
 				fname = args[1];
-				fix = true;
+				fix = false;
 			}
 			else
 				fname = args[0];
@@ -1552,11 +1552,24 @@ namespace ECCScan
 
 			if (fix)
 			{
-				Console.WriteLine("Fixing errors");
+				Console.WriteLine("Fixing edc/ecc errors. Create a backup of the file if you want to keep the orignal.");
+				Console.WriteLine("Press Enter to continue, S to scan without changing the file or other key to exit.");
+				ConsoleKeyInfo key = Console.ReadKey(true);
+				switch (key.Key) {
+					case ConsoleKey.Enter:
+						break;
+					case ConsoleKey.S:
+						fix = false;
+						break;
+                    default:
+						Console.WriteLine("Exiting.");
+						Environment.Exit(0);
+						break;
+				}
 			}
-			else
+			if (!fix)
 			{
-				Console.WriteLine("Only scanning for errors");
+				Console.WriteLine("Only scanning for errors.");
 			}
 
 
@@ -1605,7 +1618,7 @@ namespace ECCScan
 
 				if (!equal)
 				{
-					string form = "";
+					   string form = "";
 					if (sector[15] == 2)
 					{
 						if ((sector[18] & 0x20) != 0)
@@ -1624,6 +1637,8 @@ namespace ECCScan
 			}
 
 			fs.Close();
+			Console.WriteLine("Press any key to exit.");
+			Console.ReadKey();
 		}
 	}
 }
