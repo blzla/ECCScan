@@ -1526,52 +1526,62 @@ namespace ECCScan
 			if (args.Length == 0)
 			{
 				Console.WriteLine("Usage:");
-				Console.WriteLine("ECCScan_dragndrop [-s] bin_file");
+				Console.WriteLine("Drag 'n drop your PS1 image files (.bin or .img) onto this executable file.");
+				Console.WriteLine();
+				Console.WriteLine("Command line: ECCScan_dragndrop [-sf] bin_file");
 				Console.WriteLine("\tbin_file\tFull path to the .bin track file (raw format, 2352 bytes per sector)");
-				Console.WriteLine("\t-f\t\tFix EDC/ECC Errors. This will fix the errors in the same .bin file");
-
+				Console.WriteLine("\t-s\t\tScan EDC/ECC errors without changing the file.");
+				Console.WriteLine("\t-f\t\tFix EDC/ECC errors. This will fix the errors in the same .bin file without waiting for confirmation.");
+				Console.WriteLine();
+				Console.WriteLine("Press any key to exit.");
+				Console.ReadKey();
 				return;
 			}
 
 			string fname = "";
-			bool fix = true;
+			bool fix = false;
+			bool interactive = false;
 
 			if (args[0] == "-s" || args[0] == "-S")
 			{
 				fname = args[1];
-				fix = false;
+			}
+			else if (args[0] == "-f" || args[0] == "-F") 
+			{
+				fname = args[1];
+				fix = true;
 			}
 			else
-				fname = args[0];
-
-
-			FileStream fs = new FileStream(fname, FileMode.Open, fix ? FileAccess.ReadWrite : FileAccess.Read);
-
-			byte[] sector = new byte[2352];
-			byte[] sector2 = new byte[2352];
-
-			if (fix)
 			{
-				Console.WriteLine("Fixing edc/ecc errors. Create a backup of the file if you want to keep the orignal.");
+				fname = args[0];
+				interactive = true;
+			}
+
+			if (interactive)
+			{
+				Console.WriteLine("Fixing EDC/ECC errors. Create a backup of the file if you want to keep the orignal.");
 				Console.WriteLine("Press Enter to continue, S to scan without changing the file or other key to exit.");
 				ConsoleKeyInfo key = Console.ReadKey(true);
 				switch (key.Key) {
 					case ConsoleKey.Enter:
+						fix = true;
 						break;
 					case ConsoleKey.S:
-						fix = false;
 						break;
-                    default:
+					default:
 						Console.WriteLine("Exiting.");
-						Environment.Exit(0);
-						break;
+						return;
 				}
 			}
 			if (!fix)
 			{
 				Console.WriteLine("Only scanning for errors.");
 			}
+			Console.WriteLine();
 
+			FileStream fs = new FileStream(fname, FileMode.Open, fix ? FileAccess.ReadWrite : FileAccess.Read);
+			byte[] sector = new byte[2352];
+			byte[] sector2 = new byte[2352];
 
 			while (fs.CanRead)
 			{
@@ -1637,8 +1647,11 @@ namespace ECCScan
 			}
 
 			fs.Close();
-			Console.WriteLine("Press any key to exit.");
-			Console.ReadKey();
+			if (interactive)
+			{
+				Console.WriteLine("Finished. Press any key to exit.");
+				Console.ReadKey();
+			}
 		}
 	}
 }
